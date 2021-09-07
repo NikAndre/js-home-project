@@ -152,7 +152,7 @@ export default class SortableTable {
   }
   getTableRows(data){
     return  [...data].map( item => {
-        return `<a href="/products/3d-ochki-epson-elpgs03" class="sortable-table__row">
+        return `<a href="/products/${item.id}" class="sortable-table__row">
           ${ this.header.map((elem) => {
           if(elem.id === 'images'){
             return elem.template(item['images'])
