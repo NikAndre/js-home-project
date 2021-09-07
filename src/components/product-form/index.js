@@ -1,6 +1,6 @@
-//import escapeHtml from './utils/escape-html.js';
-//import fetchJson from './utils/fetch-json.js';
-import SortableList from '../sortable-list';
+import escapeHtml from './utils/escape-html.js';
+import fetchJson from './utils/fetch-json.js';
+import SortableList from '../../2-sortable-list/src/index.js'
 
 const IMGUR_CLIENT_ID = '28aaa2e823b03b1';
 const BACKEND_URL = 'https://course-js.javascript.ru';
@@ -25,6 +25,7 @@ export default class ProductForm {
     this.productId = productId
     //this.render()
   }
+
 
   uploadImage(){
     console.log(true)
@@ -76,16 +77,19 @@ export default class ProductForm {
 
     const [productData] = productResponse
 
+    //console.log(productData)
+
     this.formData  = productData
     this.categories = categoriesData
 
     this.renderTemplate()
     this.setFormData()
 
+    this.renderImages()
+
     this.initEventListeners()
 
     return this.element
-
   }
 
   renderTemplate(){
@@ -93,6 +97,7 @@ export default class ProductForm {
     element.innerHTML = this.getTemplate()
     this.element = element.firstElementChild
     this.subElements = this.getSubElements(element)
+    //console.log(this.subElements)
   }
 
   setFormData(){
@@ -119,7 +124,7 @@ export default class ProductForm {
   }
 
   initEventListeners(){
-    const {productForm,uploadImage,imageListContainer} = this.subElements
+    const {productForm,uploadImage,sortableListContainer} = this.subElements
 
     productForm.addEventListener('submit', async e => {
       e.preventDefault()
@@ -127,10 +132,10 @@ export default class ProductForm {
     })
 
     uploadImage.addEventListener('click',e => {
-      console.log(e);
+      //console.log(e);
       this.uploadImage()})
 
-    imageListContainer.addEventListener('click', event => {
+    sortableListContainer.addEventListener('click', event => {
       if ('deleteHandle' in event.target.dataset) {
         event.target.closest('li').remove();
       }
@@ -229,12 +234,8 @@ export default class ProductForm {
               <label class="form-label">Описание</label>
               <textarea id = 'description' required="" class="form-control" name="description" data-element="productDescription" placeholder='Описание товара'></textarea>
             </div>
-            <div class="form-group form-group__wide" data-element="sortable-list-container">
+            <div class="form-group form-group__wide" data-element="sortableListContainer">
               <label class="form-label">Фото</label>
-
-              <ul data-element="imageListContainer" class="sortable-list">
-                ${this.renderImages()}
-              </ul>
 
               <button type="button" data-element="uploadImage" class="button-primary-outline">
               <span>Загрузить</span>
@@ -289,25 +290,34 @@ export default class ProductForm {
   }
 
   renderImages(){
-    return this.formData.images.map(item =>{
-       return `
 
-            <li class="products-edit__imagelist-item sortable-list__item" style="">
+    const elements = [...this.formData.images].map(item =>{
+      return `
                 <input type="hidden" name="url" value=${item.url}>
                 <input type="hidden" name="source" value=${item.source}>
                 <span>
-              <img src="./icon-grab.svg" data-grab-handle="" alt="grab">
-              <img class="sortable-table__cell-img" alt="${item.source}" src=${item.url}>
-              <span>${item.source}</span>
-            </span>
-                <button type="button">
-                  <img src="icon-trash.svg" data-delete-handle="" alt="delete">
+                <img src="icon-grab.svg" data-grab-handle="" alt="grab">
+                <img class="sortable-table__cell-img" alt="${item.source}" src=${item.url}>
+                <span>${item.source}</span></span><button type="button">
+                <img src="icon-trash.svg" data-delete-handle="" alt="delete">
                 </button>
-                </li>
+               `
+    })
 
-       `
+    //console.log(elements)
+    const sortableList = new SortableList({
+      items: elements.map(item =>{
+        const element = document.createElement('li')
+
+        element.classList.add('products-edit__imagelist-item')
+        element.classList.add('sortable-list__item')
+
+        element.innerHTML = item
+        return element
       })
-      .join('')
+    })
+    //console.log(sortableList)
+    this.subElements.sortableListContainer.append(sortableList.element)
   }
 
   getSubElements(element){
