@@ -30,8 +30,6 @@ export default class SortableList {
 
     document.addEventListener('pointerup',e => {
       this.elementDrop()
-
-
     })
   }
   setElement(e,target){
@@ -58,8 +56,6 @@ export default class SortableList {
     this.element.append(target)
 
     document.addEventListener('pointermove',this.elementMove)
-
-
   }
 
   draggedElementChangePosition(clientY){
@@ -69,7 +65,6 @@ export default class SortableList {
   elementMove = (e) => {
     e.preventDefault()
     this.draggedElementChangePosition(e.clientY)
-
 
     const {firstElementChild, children} = this.element
     const {top: firstElementTop} = firstElementChild.getBoundingClientRect()
