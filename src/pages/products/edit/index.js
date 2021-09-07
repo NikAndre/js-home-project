@@ -1,5 +1,6 @@
 import ProductForm from '../../../components/product-form';
 
+
 export default class Page {
   element;
   subElements = {};
@@ -11,18 +12,14 @@ export default class Page {
       .join('')
       return id
     }
-
     this.productId = this.getId(window.location.pathname)
     console.log(this.productId)
-
   }
 
-  initComponents(){
+  async initComponents(){
     const productForm = new ProductForm(this.productId)
-
+    await productForm.render()
     console.log(productForm)
-
-
     this.components.productForm = productForm
   }
 
@@ -36,14 +33,8 @@ export default class Page {
       console.log(element)
 
       root.append(element)
-
-
     })
-
-
   }
-
-
 
   async render() {
     const element = document.createElement('div');
@@ -59,7 +50,7 @@ export default class Page {
     this.subElements = this.getSubElements(this.element)
     //console.log(this.subElements)
 
-    this.initComponents()
+    await this.initComponents()
     this.renderComponents()
 
     return this.element;
@@ -72,7 +63,6 @@ export default class Page {
       return accum
     },{})
   }
-
 
   destroy(){
     this.element.remove()

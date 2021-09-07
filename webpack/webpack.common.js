@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         // | svg - add in case when we need load svg font
-        test: /\.(woff|woff2|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(woff|woff2|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
         use: fontLoaders
       },
       {

@@ -25,7 +25,6 @@ export default class ProductForm {
     //this.render()
   }
 
-
   uploadImage(){
     console.log(true)
     const  fileInput = document.createElement('input')
@@ -93,8 +92,6 @@ export default class ProductForm {
     element.innerHTML = this.getTemplate()
     this.element = element.firstElementChild
     this.subElements = this.getSubElements(element)
-
-
   }
 
   setFormData(){
@@ -298,7 +295,7 @@ export default class ProductForm {
                 <input type="hidden" name="url" value=${item.url}>
                 <input type="hidden" name="source" value=${item.source}>
                 <span>
-              <img src="icon-grab.svg" data-grab-handle="" alt="grab">
+              <img src="./icon-grab.svg" data-grab-handle="" alt="grab">
               <img class="sortable-table__cell-img" alt="${item.source}" src=${item.url}>
               <span>${item.source}</span>
             </span>
