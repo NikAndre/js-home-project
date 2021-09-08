@@ -101,13 +101,16 @@ export default class Page{
 
   initEventListener(){
     document.addEventListener('pointerdown', event => {
-      const target = event.target.closest('.icon-toggle-sidebar')
+      const target = event.target.closest('.sidebar__toggler')
       const classExist = document.body.classList.contains('is-collapsed-sidebar')
-      console.log(document.body.classList)
+
       if(target){
-        if(classExist){
+        console.log(true)
+        if(!classExist){
+          console.log(true)
           document.body.classList.add('is-collapsed-sidebar')
         }else{
+          console.log(false)
           document.body.classList.remove('is-collapsed-sidebar')
         }
       }

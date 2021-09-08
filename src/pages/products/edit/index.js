@@ -35,7 +35,20 @@ export default class Page {
       root.append(element)
     })
   }
+  initEventListener(){
+    document.addEventListener('pointerdown', event => {
+      const target = event.target.closest('.icon-toggle-sidebar')
+      const classExist = document.body.classList.contains('is-collapsed-sidebar')
 
+      if(target){
+        if(!classExist){
+          document.body.classList.add('is-collapsed-sidebar')
+        }else{
+          document.body.classList.remove('is-collapsed-sidebar')
+        }
+      }
+    })
+  }
   async render() {
     const element = document.createElement('div');
 
@@ -52,6 +65,8 @@ export default class Page {
 
     await this.initComponents()
     this.renderComponents()
+
+    this.initEventListener()
 
     return this.element;
   }

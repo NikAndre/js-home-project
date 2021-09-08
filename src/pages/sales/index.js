@@ -81,7 +81,7 @@ export default class Page{
       const classExist = document.body.classList.contains('is-collapsed-sidebar')
       console.log(document.body.classList)
       if(target){
-        if(classExist){
+        if(!classExist){
           document.body.classList.add('is-collapsed-sidebar')
         }else{
           document.body.classList.remove('is-collapsed-sidebar')

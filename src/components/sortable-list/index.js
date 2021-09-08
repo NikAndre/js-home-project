@@ -22,15 +22,20 @@ export default class SortableList {
 
   initEventListener(){
     document.addEventListener('pointerdown', e => {
+
       e.preventDefault()
+      const draggable  =  e.target.closest('[data-grab-handle]')
+      if(draggable){
       const target = e.target.closest('.sortable-list__item')
       if(target){
        this.setElement(e,target)
-    }})
 
-    document.addEventListener('pointerup',e => {
-      this.elementDrop()
-    })
+      document.addEventListener('pointerup',e => {
+          this.elementDrop()
+      })
+    }}})
+
+
   }
   setElement(e,target){
      this.draggingElemIndex = [...this.element.children].indexOf(target)
@@ -124,6 +129,6 @@ export default class SortableList {
     this.element.remove()
   }
   destroy(){
-
+    this.remove()
   }
 }
