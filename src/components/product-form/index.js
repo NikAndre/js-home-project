@@ -273,11 +273,9 @@ export default class ProductForm {
             </div>
         </form>
   </div>
-
     `  }
 
   renderCategories(){
-
     const wrapper = document.createElement('div')
     wrapper.innerHTML = '<select id = "subcategory" class="form-control" name="subcategory"> </select>'
     const  select = wrapper.firstElementChild

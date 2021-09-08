@@ -5,6 +5,7 @@ export default class SortableList {
     items = ``
               }={}
               ) {
+    console.log(items)
     this.items = items.map(item => {
       item.classList.add('sortable-list__item')
        return item
@@ -39,7 +40,6 @@ export default class SortableList {
   }
   setElement(e,target){
      this.draggingElemIndex = [...this.element.children].indexOf(target)
-
 
     this.draggingTarget = target
 
