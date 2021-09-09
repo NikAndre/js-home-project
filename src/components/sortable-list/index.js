@@ -5,41 +5,43 @@ export default class SortableList {
     items = ``
               }={}
               ) {
-    console.log(items)
+    //console.log(items)
     this.items = items.map(item => {
       item.classList.add('sortable-list__item')
        return item
     },'')
     this.render()
   }
-
   render(){
     const  element = document.createElement('ul')
     element.className = 'sortable-list'
     element.append(...this.items)
     this.element = element
+    console.log(this.element)
     this.initEventListener()
+
+
   }
-
   initEventListener(){
-    document.addEventListener('pointerdown', e => {
+    document.addEventListener('pointerdown', event => this.onPointerDown(event))
 
-      e.preventDefault()
-      const draggable  =  e.target.closest('[data-grab-handle]')
-      if(draggable){
-      const target = e.target.closest('.sortable-list__item')
-      if(target){
-       this.setElement(e,target)
+  }
+  onPointerDown(event){
+    console.log(event.which)
+    if(event.which !== 1){
+      return false
+    }
+    const target = event.target.closest('.sortable-list__item')
 
-      document.addEventListener('pointerup',e => {
-          this.elementDrop()
-      })
-    }}})
-
-
+    if(target){
+      if(event.target.closest('[data-grab-handle]')){
+        event.preventDefault()
+        this.setElement(event,target)
+      }
+    }
   }
   setElement(e,target){
-     this.draggingElemIndex = [...this.element.children].indexOf(target)
+    this.elementInitialIndex = [...this.element.children].indexOf(target)
 
     this.draggingTarget = target
 
@@ -61,12 +63,11 @@ export default class SortableList {
     this.element.append(target)
 
     document.addEventListener('pointermove',this.elementMove)
+    document.addEventListener('pointerup',this.elementDrop)
   }
-
   draggedElementChangePosition(clientY){
     this.draggingTarget.style.top = clientY - this.shiftY + 'px'
   }
-
   elementMove = (e) => {
     e.preventDefault()
     this.draggedElementChangePosition(e.clientY)
@@ -99,11 +100,9 @@ export default class SortableList {
       }
     }
   }
-
-  elementDrop(){
+  elementDrop = () => {
     document.removeEventListener('pointermove', this.elementMove)
     this.elementDragStop()
-
   }
   elementDragStop(){
     const draggedElemIndex = [...this.element.children].indexOf(this.placeholderElement)
@@ -116,7 +115,21 @@ export default class SortableList {
     this.draggingTarget.style.height = ''
     this.draggingTarget.style.width = ''
 
+
+
+    document.removeEventListener('pointerup',this.elementDrop)
+
     this.draggingTarget = null
+
+    if (draggedElemIndex !== this.elementInitialIndex) {
+      this.element.dispatchEvent(new CustomEvent('sortable-list-reorder', {
+        bubbles: true,
+        detail: {
+          from: this.elementInitialIndex,
+          to: draggedElemIndex
+        }
+      }));
+    }
   }
   movePlaceholderAt(index){
     const element = this.element.children[index]
@@ -124,7 +137,6 @@ export default class SortableList {
       this.element.insertBefore(this.placeholderElement,element)
     }
   }
-
   remove(){
     this.element.remove()
   }

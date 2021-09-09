@@ -1,10 +1,12 @@
-import SortableList from '../../components/sortable-list';
+import Categories from '../../components/categories';
 
 const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class Page{
   element
   subElements = {}
+  components = {}
+  data
 
 
   async render(){
@@ -12,104 +14,56 @@ export default class Page{
     element.innerHTML = this.getTemplate()
     this.element = element.firstElementChild
     this.subElements = this.getSubElements(this.element)
-    console.log(this.subElements)
 
-    this.renderCategories()
-    this.initEventListener()
+    await this.getCategoriesData()
+
+    this.initComponents(this.data)
+
+    this.renderComponents()
 
     return this.element
   }
-  initEventListener(){
-    document.addEventListener('pointerdown',event => {
 
-      const  target = event.target.closest('.category__header')
+  initComponents(data){
+    const categories = new Categories(data)
 
-      if(target){
-        const  classList = target.parentElement.classList.contains('category_open')
-        if(!classList) {
-          console.log(event.target)
-          target.parentElement.classList.add('category_open')
-        }else{
-          target.parentElement.classList.remove('category_open')
-        }
-      }
+    this.components.categories = categories
+  }
+
+  renderComponents(){
+    Object.keys(this.components).forEach(component => {
+      const root = this.subElements[component]
+      const {element} = this.components[component]
+      console.log(root);
+      root.append(element)
     })
   }
 
-  async getSubCategories(){
-    const categories = await fetch(BACKEND_URL+'/api/rest/categories?_sort=weight&_refs=subcategory')
+  getTemplate () {
+    return `
+    <div class="categories">
+      <div class="content__top-panel">
+        <h1 class="page-title">Категории товаров</h1>
+      </div>
+      <div data-element="categories">
+        <!-- categories component -->
+      </div>
+    </div>`;
+  }
+
+
+  async getCategoriesData(){
+    this.data = await fetch(BACKEND_URL+'/api/rest/categories?_sort=weight&_refs=subcategory')
       .then(response => {
         return response.json()
       })
       .then(data => {
         return data
       })
-    return categories
   }
 
-  async renderCategories(){
-    const categories = await this.getSubCategories()
-    console.log(categories)
-    const elements =  [...categories].map(elem => {
-      return `
-        <div class='category' data-id='${elem.id}'>
-          <header class='category__header'>${elem.title}</header>
-          <div class='category__body'>
-            <div class='subcategory-list'>
-            <ul class='sortable-list'>
-            ${this.getSortableList(elem.subcategories)}
-            </ul>
-            </div>
-          </div>
-        </div>
-
-      `
-    })
-    this.subElements.categoriesContainer.innerHTML = elements
-  }
-  getSortableList(subcategories){
-    // const items = subcategories.map(item => {
-    //   return `
-    //   <div class='categories__sortable-list-item sortable-list__item' data-grab-handle data-id='${item.id}'>
-    //
-    //   </div>
-    //   `
-    // })
 
 
-    const sortableList = new SortableList({
-      items: subcategories.map(item => {
-        const  element = document.createElement('li')
-        element.classList.add('categories__sortable-list-item')
-        element.dataset.id = item.id
-        element.setAttribute('data-grab-handle',"")
-        element.innerHTML = `
-        <strong>${item.title}</strong>
-        <span><b2>${item.count} products</b2></span>
-        `
-        console.log(element)
-        return  element
-
-        }
-
-      )
-    })
-    console.log(sortableList.element)
-    return sortableList.element.innerHTML
-  }
-
-  getTemplate(){
-    return `
-      <div class='categories'>
-        <div class='content__top-panel'>
-          <h1 class='page-title'>Категория товара</h1>
-        </div>
-        <div data-element = "categoriesContainer">
-
-        </div>
-      </div>
-    `
-  }
   getSubElements(element){
     const subElements = {}
     const elements = element.querySelectorAll('[data-element]')
@@ -121,6 +75,7 @@ export default class Page{
 
   remove(){
     this.element.remove()
+    document.removeEventListener('click',event => this.getBlockOpen(event))
   }
   destroy(){
     this.remove()

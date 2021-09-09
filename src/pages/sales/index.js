@@ -44,19 +44,11 @@ export default class Page{
 
   renderComponents(){
     Object.keys(this.components).forEach(component => {
-
        const root = this.subElements[component]
-
        const {element} = this.components[component]
-
-
-      console.log(root);
+       console.log(root);
        root.append(element)
-
-
     })
-
-
   }
 
   async render(){
